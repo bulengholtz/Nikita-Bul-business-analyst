@@ -39,7 +39,8 @@ I love turning raw data into powerful dashboards and actionable insights using m
 - Integrated payment gateway with exception handling
 - Clear swimlanes for Sales Team and IT systems
 - Smart management of customer responses and payment timeouts
-🔗 [View Repository] (https://github.com/bulengholtz/Nikita-Bul-business-analyst/blob/main/Буланов Электронное оформление страхового полиса.pdf)
+
+🔗 [View Repository](https://github.com/bulengholtz/Nikita-Bul-business-analyst/blob/main/Буланов Электронное оформление страхового полиса.pdf)
 
 
 ## 📫 Contact  
