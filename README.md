@@ -1,5 +1,5 @@
 # Hi there 👋, I'm Nikita  
-### Currently working as a Business Analyst Intern at Unified Mentor, where I am analyzing business data using Power BI, SQL, and Excel to generate actionable insights." | Power BI Enthusiast | Data-Driven Mindset  
+### A beginner Business Analyst with a solid foundation in data analysis, successfully completed an intensive training program. Proficient in Power BI, SQL, and Excel. Eager to apply my skills to real-world business problems, dive deep into processes, and master the intricacies of business analysis from the ground up. Passionate about transforming raw data into clear, actionable insights.
 
 Welcome to my GitHub portfolio!  
 I love turning raw data into powerful dashboards and actionable insights using modern BI tools.
