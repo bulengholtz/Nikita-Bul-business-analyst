@@ -1,4 +1,3 @@
-# Nikita-Bul-business-analyst
 # Hi there 👋, I'm Nikita  
 ### Currently working as a Business Analyst Intern at Unified Mentor, where I am analyzing business data using Power BI, SQL, and Excel to generate actionable insights." | Power BI Enthusiast | Data-Driven Mindset  
 
