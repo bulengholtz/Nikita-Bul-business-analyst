@@ -18,20 +18,20 @@ I love turning raw data into powerful dashboards and actionable insights using m
 
 ## 📊 Projects
 
-### 🛍️ E-commerce Sales Dashboard  
+### 🏗️ Metal Sales vs Budget Dashboard (Power BI)  
 📌 *Understand product performance, customer behavior & sales trends*  
 **Key Insights**:
-- Top-selling & underperforming categories  
-- Monthly sales trends by region  
-- Smart Narrative AI visual summaries  
-- Dynamic filters for drill-down analysis  
+- Sales vs Budget with variance (Δ and Δ%) by month
+- Top-performing and underperforming product subcategories
+- Top 10 customers and Top 10 products
+- City-level sales map with dynamic filters for drill-down analysis 
 
-🔗 [View Repository](https://github.com/sapnaba07/ecommerce-sales-dashboard)
+🔗 [View Repository](https://github.com/bulengholtz/Nikita-Bul-business-analyst/blob/main/Sales%20report%20Bulanov.pbix)
 
 ---
 
 ### 🚀 Electronic OSAGO Insurance Policy  
-📌 *A visual model of the streamlined business process for issuing e-OSAGO policies**:
+📌 *A visual model of the streamlined business process for issuing E-OSAGO policies**:
 -  End-to-end process mapping from application to policy issuance  
 - Automated data verification & premium calculation logic  
 - Integrated payment gateway with exception handling  
