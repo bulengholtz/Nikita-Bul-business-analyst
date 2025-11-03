@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" id="Defs_Metalloprokat_Sales_Readable" targetNamespace="http://example.com/bpmn/metalloprokat" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.6.1">
+  <process id="Process_Metalloprokat_Sales" name="Продажи металлопроката" isExecutable="false">
+    <laneSet id="LaneSet_1">
+      <lane id="Lane_AMOCRm" name="amoCRM">
+        <flowNodeRef>Task_CRM_AttachInvoice</flowNodeRef>
+        <flowNodeRef>Task_CRM_CreateOrUpdateDeal</flowNodeRef>
+        <flowNodeRef>Task_CRM_UpdateStage_Paid</flowNodeRef>
+        <flowNodeRef>Task_CRM_UpdateStage_QuoteSent</flowNodeRef>
+      </lane>
+      <lane id="Lane_Manager" name="Менеджер по продажам">
+        <flowNodeRef>Task_Manager_ReceiveLead</flowNodeRef>
+        <flowNodeRef>Task_Manager_Qualify</flowNodeRef>
+        <flowNodeRef>Task_Manager_CheckStock</flowNodeRef>
+        <flowNodeRef>Task_Manager_OfferAlternative</flowNodeRef>
+        <flowNodeRef>Task_Manager_PrepareQuote</flowNodeRef>
+        <flowNodeRef>Task_Manager_CreateInvoice</flowNodeRef>
+        <flowNodeRef>Task_Manager_Negotiate</flowNodeRef>
+        <flowNodeRef>Task_Manager_ArrangeShipment</flowNodeRef>
+        <flowNodeRef>Task_Manager_SendQuote</flowNodeRef>
+        <flowNodeRef>Gateway_StockAvailable</flowNodeRef>
+        <flowNodeRef>Event_Manager_WaitResponse</flowNodeRef>
+        <flowNodeRef>EndEvent_Won</flowNodeRef>
+      </lane>
+      <lane id="Lane_Client" name="Клиент">
+        <flowNodeRef>Task_Client_SendRequest</flowNodeRef>
+        <flowNodeRef>Task_Client_ReviewQuote</flowNodeRef>
+        <flowNodeRef>Task_Client_PayInvoice</flowNodeRef>
+        <flowNodeRef>StartEvent_Client</flowNodeRef>
+        <flowNodeRef>EndEvent_Lost</flowNodeRef>
+        <flowNodeRef>Gateway_ClientDecision</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="StartEvent_Client" name="Старт: потребность">
+      <outgoing>Flow_1</outgoing>
+    </startEvent>
+    <userTask id="Task_Client_SendRequest" name="Отправить запрос (номенклатура, объем, сроки)">
+      <incoming>Flow_1</incoming>
+      <outgoing>Flow_2</outgoing>
+    </userTask>
+    <userTask id="Task_Manager_ReceiveLead" name="Получить заявку и завести лид">
+      <incoming>Flow_2</incoming>
+      <outgoing>Flow_3</outgoing>
+    </userTask>
+    <userTask id="Task_Manager_Qualify" name="Квалифицировать лид (BANT/ICP)">
+      <incoming>Flow_3</incoming>
+      <outgoing>Flow_4</outgoing>
+    </userTask>
+    <userTask id="Task_Manager_CheckStock" name="Проверить наличие/сроки у снабжения/склада">
+      <incoming>Flow_4</incoming>
+      <outgoing>Flow_5</outgoing>
+    </userTask>
+    <exclusiveGateway id="Gateway_StockAvailable" name="Есть наличие/сроки устраивают?">
+      <incoming>Flow_5</incoming>
+      <outgoing>Flow_6_yes</outgoing>
+      <outgoing>Flow_6_no</outgoing>
+    </exclusiveGateway>
+    <userTask id="Task_Manager_OfferAlternative" name="Предложить альтернативу (сечение/марка/срок)">
+      <incoming>Flow_6_no</incoming>
+      <outgoing>Flow_0otmv2l</outgoing>
+    </userTask>
+    <userTask id="Task_Manager_PrepareQuote" name="Подготовить КП (цена, логистика, условия)">
+      <incoming>Flow_6_yes</incoming>
+      <outgoing>Flow_7</outgoing>
+    </userTask>
+    <userTask id="Task_Manager_SendQuote" name="Отправить КП клиенту">
+      <incoming>Flow_1snam5x</incoming>
+      <incoming>Flow_0otmv2l</incoming>
+      <incoming>Flow_7</incoming>
+      <outgoing>Flow_8_to_crm_stage</outgoing>
+    </userTask>
+    <serviceTask id="Task_CRM_UpdateStage_QuoteSent" name="amoCRM: Обновить этап &#39;КП отправлено&#39;">
+      <incoming>Flow_8_to_crm_stage</incoming>
+      <outgoing>Flow_9_wait</outgoing>
+    </serviceTask>
+    <intermediateCatchEvent id="Event_Manager_WaitResponse" name="Ожидать ответ клиента">
+      <incoming>Flow_9_wait</incoming>
+      <incoming>Flow_12_from_negotiation</incoming>
+      <outgoing>Flow_10_to_client_review</outgoing>
+      <outgoing>Flow_1snam5x</outgoing>
+      <messageEventDefinition />
+    </intermediateCatchEvent>
+    <userTask id="Task_Client_ReviewQuote" name="Изучить КП">
+      <incoming>Flow_10_to_client_review</incoming>
+      <outgoing>Flow_11_to_decision</outgoing>
+    </userTask>
+    <exclusiveGateway id="Gateway_ClientDecision" name="Одобрил условия?">
+      <incoming>Flow_11_to_decision</incoming>
+      <outgoing>Flow_12_changes</outgoing>
+      <outgoing>Flow_13_approved</outgoing>
+      <outgoing>Flow_14_rejected</outgoing>
+    </exclusiveGateway>
+    <userTask id="Task_Manager_Negotiate" name="Согласовать изменения (торг/условия)">
+      <incoming>Flow_12_changes</incoming>
+      <outgoing>Flow_12_from_negotiation</outgoing>
+    </userTask>
+    <serviceTask id="Task_CRM_CreateOrUpdateDeal" name="amoCRM: Создать/обновить сделку (Статус &#39;Согласовано&#39;)">
+      <incoming>Flow_13_approved</incoming>
+      <outgoing>Flow_15_invoice</outgoing>
+    </serviceTask>
+    <userTask id="Task_Manager_CreateInvoice" name="Сформировать счет">
+      <incoming>Flow_15_invoice</incoming>
+      <outgoing>Flow_16_attach</outgoing>
+    </userTask>
+    <serviceTask id="Task_CRM_AttachInvoice" name="amoCRM: Приложить счет к сделке">
+      <incoming>Flow_16_attach</incoming>
+      <outgoing>Flow_17_pay</outgoing>
+    </serviceTask>
+    <userTask id="Task_Client_PayInvoice" name="Оплатить счет">
+      <incoming>Flow_17_pay</incoming>
+      <outgoing>Flow_18_paid_stage</outgoing>
+    </userTask>
+    <serviceTask id="Task_CRM_UpdateStage_Paid" name="amoCRM: Обновить этап &#39;Оплачено&#39;">
+      <incoming>Flow_18_paid_stage</incoming>
+      <outgoing>Flow_19_ship</outgoing>
+    </serviceTask>
+    <userTask id="Task_Manager_ArrangeShipment" name="Запустить отгрузку/доставку">
+      <incoming>Flow_19_ship</incoming>
+      <outgoing>Flow_20_won</outgoing>
+    </userTask>
+    <endEvent id="EndEvent_Won" name="Сделка выиграна">
+      <incoming>Flow_20_won</incoming>
+    </endEvent>
+    <endEvent id="EndEvent_Lost" name="Сделка проиграна">
+      <incoming>Flow_14_rejected</incoming>
+    </endEvent>
+    <sequenceFlow id="Flow_1" sourceRef="StartEvent_Client" targetRef="Task_Client_SendRequest" />
+    <sequenceFlow id="Flow_2" sourceRef="Task_Client_SendRequest" targetRef="Task_Manager_ReceiveLead" />
+    <sequenceFlow id="Flow_3" sourceRef="Task_Manager_ReceiveLead" targetRef="Task_Manager_Qualify" />
+    <sequenceFlow id="Flow_4" sourceRef="Task_Manager_Qualify" targetRef="Task_Manager_CheckStock" />
+    <sequenceFlow id="Flow_5" sourceRef="Task_Manager_CheckStock" targetRef="Gateway_StockAvailable" />
+    <sequenceFlow id="Flow_6_yes" name="Да" sourceRef="Gateway_StockAvailable" targetRef="Task_Manager_PrepareQuote" />
+    <sequenceFlow id="Flow_6_no" name="Нет" sourceRef="Gateway_StockAvailable" targetRef="Task_Manager_OfferAlternative" />
+    <sequenceFlow id="Flow_7" sourceRef="Task_Manager_PrepareQuote" targetRef="Task_Manager_SendQuote" />
+    <sequenceFlow id="Flow_8_to_crm_stage" sourceRef="Task_Manager_SendQuote" targetRef="Task_CRM_UpdateStage_QuoteSent" />
+    <sequenceFlow id="Flow_9_wait" sourceRef="Task_CRM_UpdateStage_QuoteSent" targetRef="Event_Manager_WaitResponse" />
+    <sequenceFlow id="Flow_10_to_client_review" sourceRef="Event_Manager_WaitResponse" targetRef="Task_Client_ReviewQuote" />
+    <sequenceFlow id="Flow_11_to_decision" sourceRef="Task_Client_ReviewQuote" targetRef="Gateway_ClientDecision" />
+    <sequenceFlow id="Flow_12_changes" name="Запросить изменения" sourceRef="Gateway_ClientDecision" targetRef="Task_Manager_Negotiate" />
+    <sequenceFlow id="Flow_12_from_negotiation" sourceRef="Task_Manager_Negotiate" targetRef="Event_Manager_WaitResponse" />
+    <sequenceFlow id="Flow_13_approved" name="Одобрено" sourceRef="Gateway_ClientDecision" targetRef="Task_CRM_CreateOrUpdateDeal" />
+    <sequenceFlow id="Flow_15_invoice" sourceRef="Task_CRM_CreateOrUpdateDeal" targetRef="Task_Manager_CreateInvoice" />
+    <sequenceFlow id="Flow_16_attach" sourceRef="Task_Manager_CreateInvoice" targetRef="Task_CRM_AttachInvoice" />
+    <sequenceFlow id="Flow_17_pay" sourceRef="Task_CRM_AttachInvoice" targetRef="Task_Client_PayInvoice" />
+    <sequenceFlow id="Flow_18_paid_stage" sourceRef="Task_Client_PayInvoice" targetRef="Task_CRM_UpdateStage_Paid" />
+    <sequenceFlow id="Flow_19_ship" sourceRef="Task_CRM_UpdateStage_Paid" targetRef="Task_Manager_ArrangeShipment" />
+    <sequenceFlow id="Flow_20_won" sourceRef="Task_Manager_ArrangeShipment" targetRef="EndEvent_Won" />
+    <sequenceFlow id="Flow_14_rejected" name="Отказ" sourceRef="Gateway_ClientDecision" targetRef="EndEvent_Lost" />
+    <sequenceFlow id="Flow_1snam5x" sourceRef="Event_Manager_WaitResponse" targetRef="Task_Manager_SendQuote" />
+    <sequenceFlow id="Flow_0otmv2l" sourceRef="Task_Manager_OfferAlternative" targetRef="Task_Manager_SendQuote" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_Metalloprokat_Sales">
+      <bpmndi:BPMNShape id="LaneShape_AMO" bpmnElement="Lane_AMOCRm" isHorizontal="true">
+        <omgdc:Bounds x="160" y="2900" width="5920" height="850" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="LaneShape_Manager" bpmnElement="Lane_Manager" isHorizontal="true">
+        <omgdc:Bounds x="160" y="1260" width="5920" height="1640" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="LaneShape_Client" bpmnElement="Lane_Client" isHorizontal="true">
+        <omgdc:Bounds x="160" y="80" width="5920" height="1180" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_StartEvent_Client" bpmnElement="StartEvent_Client">
+        <omgdc:Bounds x="222" y="922" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="208" y="884.5" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Client_SendRequest" bpmnElement="Task_Client_SendRequest">
+        <omgdc:Bounds x="320" y="900" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Client_ReviewQuote" bpmnElement="Task_Client_ReviewQuote">
+        <omgdc:Bounds x="2440" y="450" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_ClientDecision" bpmnElement="Gateway_ClientDecision" isMarkerVisible="true">
+        <omgdc:Bounds x="3415" y="465" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="3375" y="427.5" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_Lost" bpmnElement="EndEvent_Lost">
+        <omgdc:Bounds x="5962" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="5953" y="246" width="53" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Manager_ReceiveLead" bpmnElement="Task_Manager_ReceiveLead">
+        <omgdc:Bounds x="500" y="2010" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Manager_Qualify" bpmnElement="Task_Manager_Qualify">
+        <omgdc:Bounds x="870" y="2010" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Manager_CheckStock" bpmnElement="Task_Manager_CheckStock">
+        <omgdc:Bounds x="1150" y="2010" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Manager_OfferAlternative" bpmnElement="Task_Manager_OfferAlternative">
+        <omgdc:Bounds x="1620" y="2320" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Manager_PrepareQuote" bpmnElement="Task_Manager_PrepareQuote">
+        <omgdc:Bounds x="1620" y="1780" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_StockAvailable" bpmnElement="Gateway_StockAvailable" isMarkerVisible="true">
+        <omgdc:Bounds x="1515" y="2035" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1575" y="2040" width="78" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Event_Manager_WaitResponse" bpmnElement="Event_Manager_WaitResponse">
+        <omgdc:Bounds x="2515" y="2055" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="2426" y="2066.5" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Manager_CreateInvoice" bpmnElement="Task_Manager_CreateInvoice">
+        <omgdc:Bounds x="4180" y="2040" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CRM_AttachInvoice" bpmnElement="Task_CRM_AttachInvoice">
+        <omgdc:Bounds x="4460" y="3200" width="240" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CRM_CreateOrUpdateDeal" bpmnElement="Task_CRM_CreateOrUpdateDeal">
+        <omgdc:Bounds x="3890" y="3200" width="260" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Manager_Negotiate" bpmnElement="Task_Manager_Negotiate">
+        <omgdc:Bounds x="3340" y="2040" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CRM_UpdateStage_Paid" bpmnElement="Task_CRM_UpdateStage_Paid">
+        <omgdc:Bounds x="5040" y="3180" width="240" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Manager_ArrangeShipment" bpmnElement="Task_Manager_ArrangeShipment">
+        <omgdc:Bounds x="5330" y="2040" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_EndEvent_Won" bpmnElement="EndEvent_Won">
+        <omgdc:Bounds x="5935" y="2055" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="5915" y="2105" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Client_PayInvoice" bpmnElement="Task_Client_PayInvoice">
+        <omgdc:Bounds x="4730" y="450" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_Manager_SendQuote" bpmnElement="Task_Manager_SendQuote">
+        <omgdc:Bounds x="2110" y="2040" width="200" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task_CRM_UpdateStage_QuoteSent" bpmnElement="Task_CRM_UpdateStage_QuoteSent">
+        <omgdc:Bounds x="2090" y="3200" width="240" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_1" bpmnElement="Flow_1">
+        <omgdi:waypoint x="258" y="940" />
+        <omgdi:waypoint x="320" y="940" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_2" bpmnElement="Flow_2">
+        <omgdi:waypoint x="520" y="940" />
+        <omgdi:waypoint x="600" y="940" />
+        <omgdi:waypoint x="600" y="2010" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_3" bpmnElement="Flow_3">
+        <omgdi:waypoint x="700" y="2050" />
+        <omgdi:waypoint x="870" y="2050" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_4" bpmnElement="Flow_4">
+        <omgdi:waypoint x="1070" y="2050" />
+        <omgdi:waypoint x="1150" y="2050" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_5" bpmnElement="Flow_5">
+        <omgdi:waypoint x="1350" y="2058" />
+        <omgdi:waypoint x="1517" y="2058" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_6_yes" bpmnElement="Flow_6_yes">
+        <omgdi:waypoint x="1540" y="2035" />
+        <omgdi:waypoint x="1540" y="1820" />
+        <omgdi:waypoint x="1620" y="1820" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1516" y="1913" width="14" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_6_no" bpmnElement="Flow_6_no">
+        <omgdi:waypoint x="1540" y="2085" />
+        <omgdi:waypoint x="1540" y="2360" />
+        <omgdi:waypoint x="1620" y="2360" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="1548" y="2212" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_7" bpmnElement="Flow_7">
+        <omgdi:waypoint x="1820" y="1820" />
+        <omgdi:waypoint x="1890" y="1820" />
+        <omgdi:waypoint x="1890" y="2080" />
+        <omgdi:waypoint x="2110" y="2080" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_8_to_crm_stage" bpmnElement="Flow_8_to_crm_stage">
+        <omgdi:waypoint x="2210" y="2120" />
+        <omgdi:waypoint x="2210" y="3200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_9_wait" bpmnElement="Flow_9_wait">
+        <omgdi:waypoint x="2330" y="3240" />
+        <omgdi:waypoint x="2540" y="3240" />
+        <omgdi:waypoint x="2540" y="2105" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_10_to_client_review" bpmnElement="Flow_10_to_client_review">
+        <omgdi:waypoint x="2540" y="2055" />
+        <omgdi:waypoint x="2540" y="530" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_12_changes" bpmnElement="Flow_12_changes">
+        <omgdi:waypoint x="3440" y="515" />
+        <omgdi:waypoint x="3440" y="2040" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="3441" y="566" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_12_from_negotiation" bpmnElement="Flow_12_from_negotiation">
+        <omgdi:waypoint x="3340" y="2080" />
+        <omgdi:waypoint x="2565" y="2080" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_13_approved" bpmnElement="Flow_13_approved">
+        <omgdi:waypoint x="3465" y="490" />
+        <omgdi:waypoint x="4010" y="490" />
+        <omgdi:waypoint x="4010" y="3200" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="3504" y="473" width="52" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_15_invoice" bpmnElement="Flow_15_invoice">
+        <omgdi:waypoint x="4150" y="3240" />
+        <omgdi:waypoint x="4280" y="3240" />
+        <omgdi:waypoint x="4280" y="2120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_16_attach" bpmnElement="Flow_16_attach">
+        <omgdi:waypoint x="4380" y="2080" />
+        <omgdi:waypoint x="4580" y="2080" />
+        <omgdi:waypoint x="4580" y="3200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_17_pay" bpmnElement="Flow_17_pay">
+        <omgdi:waypoint x="4700" y="3240" />
+        <omgdi:waypoint x="4830" y="3240" />
+        <omgdi:waypoint x="4830" y="530" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_18_paid_stage" bpmnElement="Flow_18_paid_stage">
+        <omgdi:waypoint x="4930" y="490" />
+        <omgdi:waypoint x="5110" y="490" />
+        <omgdi:waypoint x="5120" y="3180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_19_ship" bpmnElement="Flow_19_ship">
+        <omgdi:waypoint x="5280" y="3220" />
+        <omgdi:waypoint x="5430" y="3220" />
+        <omgdi:waypoint x="5430" y="2120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_20_won" bpmnElement="Flow_20_won">
+        <omgdi:waypoint x="5530" y="2080" />
+        <omgdi:waypoint x="5935" y="2078" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_14_rejected" bpmnElement="Flow_14_rejected">
+        <omgdi:waypoint x="3440" y="465" />
+        <omgdi:waypoint x="3440" y="300" />
+        <omgdi:waypoint x="5962" y="300" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="3445" y="373" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1snam5x_di" bpmnElement="Flow_1snam5x">
+        <omgdi:waypoint x="2515" y="2080" />
+        <omgdi:waypoint x="2310" y="2080" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0otmv2l_di" bpmnElement="Flow_0otmv2l">
+        <omgdi:waypoint x="1820" y="2360" />
+        <omgdi:waypoint x="1890" y="2360" />
+        <omgdi:waypoint x="1890" y="2080" />
+        <omgdi:waypoint x="2110" y="2080" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_11_to_decision" bpmnElement="Flow_11_to_decision">
+        <omgdi:waypoint x="2640" y="490" />
+        <omgdi:waypoint x="3415" y="490" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
