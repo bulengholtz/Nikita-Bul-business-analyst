@@ -46,4 +46,4 @@ I love turning raw data into powerful dashboards and actionable insights using m
 ## 📫 Contact  
 📧 bulengholtz@gmail.com  
 🌐 LinkedIn: www.linkedin.com/in/никита-буланов-9051a4397
-🔗 tg:@bestbulengholtz
+🔗 tg:[@bestbulengholtz](https://t.me/bestbulengholtz)
