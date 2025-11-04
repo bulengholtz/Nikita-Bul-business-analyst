@@ -40,7 +40,7 @@ I love turning raw data into powerful dashboards and actionable insights using m
 - Clear swimlanes for Sales Team and IT systems
 - Smart management of customer responses and payment timeouts
 
-🔗 [View Repository](https://github.com/bulengholtz/Nikita-Bul-business-analyst/blob/main/E-OSAGO%20NB))
+🔗 [View Repository](https://github.com/bulengholtz/Nikita-Bul-business-analyst/blob/main/E-OSAGO%20NB)
 
 
 ## 📫 Contact  
